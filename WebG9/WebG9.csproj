@@ -139,6 +139,10 @@
     <Compile Include="Repository\WhiskyRepository.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\Alcool.mdf" />
+    <Content Include="App_Data\Alcool_log.ldf">
+      <DependentUpon>Alcool.mdf</DependentUpon>
+    </Content>
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -186,7 +190,6 @@
     <Content Include="Views\Whisky\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="Views\Base\" />
   </ItemGroup>
   <ItemGroup>

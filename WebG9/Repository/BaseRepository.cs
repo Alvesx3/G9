@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using WebG9.Models;
@@ -8,13 +10,15 @@ namespace WebG9.Repository
 {
     public class BaseRepository<T> where T:BaseModel
     {
-        private static List<T> list = new List<T>();
-        static int id = 1;
+        //private static List<T> list = new List<T>();
+        string connString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\Havan\Documents\GitHub\G9\WebG9\App_Data\Alcool.mdf;Integrated Security = True";
         public virtual void Create(T model)
         {
-            model.Id = id;
-            list.Add(model);
-            id++;
+            ExecNoQuery("INSERT INTO Alcool" +
+                        "( Nome,Valor)" +
+                        $"VALUES ('{model.Nome}'" +
+                        $",{model.Valor.ToString(CultureInfo.InvariantCulture)})"
+                );
         }
         public virtual List<T> Read()
         {
@@ -38,6 +42,19 @@ namespace WebG9.Repository
             if (model != null)
             {
                 list.Remove(model);
+            }
+        }
+        void ExecNoQuery(string comando)
+        {
+            using (var conn = new SqlConnection(connString))
+            {
+                conn.Open();
+                using (SqlCommand command = new SqlCommand())
+                {
+                    command.Connection = conn;
+                    command.CommandText = comando;
+                    command.ExecuteNonQuery();
+                }
             }
         }
 
