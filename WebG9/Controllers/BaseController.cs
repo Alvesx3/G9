@@ -35,7 +35,7 @@ namespace WebG9.Controllers
         [HttpGet]
         public ActionResult Edit(int id)
         {
-            T model = repository.Read(id);
+            T model = repository.ReadByID(id);
             return View(model);
         }
         [HttpPost]
@@ -55,7 +55,7 @@ namespace WebG9.Controllers
         }
         public ActionResult Details(int id)
         {
-            return View(repository.Read(id));
+            return View(repository.ReadByID(id));
         }
     }
 }
