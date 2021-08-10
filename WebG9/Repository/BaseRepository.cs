@@ -10,7 +10,6 @@ namespace WebG9.Repository
 {
     public class BaseRepository<T> where T:BaseModel
     {
-        //private static List<T> list = new List<T>();
         string connString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\Havan\Documents\GitHub\G9\WebG9\App_Data\Alcool.mdf;Integrated Security = True";
         public virtual void Create(T model)
         {
@@ -22,29 +21,69 @@ namespace WebG9.Repository
         }
         public virtual List<T> Read()
         {
+            List<T> list = new List<T>();
+            using (var conn = new SqlConnection(connString))
+            {
+                conn.Open();
+                using (SqlCommand command = new SqlCommand())
+                {
+                    command.Connection = conn;
+                    command.CommandText = "SELECT Id,Nome, Valor FROM Alcool";
+                    using (var dataReader = command.ExecuteReader())
+                    {
+                        while (dataReader.Read())
+                        {
+                            T model = new T();
+                            model.Id = Convert.ToInt32(dataReader["id"]);
+                            model.Nome = dataReader["Nome"].ToString();
+                            model.Valor = Convert.ToDecimal(dataReader["Valor"]);
+                            list.Add(model);
+                        }
+
+                    }
+                }
+            }
             return list;
         }
-        public virtual T Read(int id)
+        public virtual T ReadByID(int id)
         {
-            return list.Find(v => v.Id == id);
-        }
-        public void Update(T model)
-        {
-           int index = list.FindIndex(v => v.Id == model.Id);
-            if (index != -1)
+            T model = new T();
+            using (var conn = new SqlConnection(connString))
             {
-                list[index] = model;
+                conn.Open();
+                using (SqlCommand command = new SqlCommand())
+                {
+                    command.Connection = conn;
+                    command.CommandText = "SELECT Id,Nome, Valor FROM Alcool";
+                    using (var dataReader = command.ExecuteReader())
+                    {
+                        while (dataReader.Read())
+                        {
+                            T model = new T();
+                            model.Id = Convert.ToInt32(dataReader["id"]);
+                            model.Nome = dataReader["Nome"].ToString();
+                            model.Valor = Convert.ToDecimal(dataReader["Valor"]);
+                            list.Add(model);
+                        }
+
+                    }
+                }
             }
+            return list;
         }
-        public void Delete(int id)
+        public virtual void Update(T model)
         {
-            T model = Read(id);
-            if (model != null)
-            {
-                list.Remove(model);
-            }
+            ExecNoQuery("UPDATE Alcool" +
+                            "SET" +
+                           $"Nome = {model.Nome}" +
+                           $",Valor = {model.Valor.ToString(CultureInfo.InvariantCulture)}" +
+                           $"WHERE Id = {model.Id}");
         }
-        void ExecNoQuery(string comando)
+        public virtual void Delete(int id)
+        {
+            ExecNoQuery($"DELETE FROM Alcool WHERE Id ={id}");
+        }
+         public virtual void ExecNoQuery(string comando)
         {
             using (var conn = new SqlConnection(connString))
             {
